@@ -19,8 +19,8 @@ class BackendBase(object):
         self.on_image = []
         self.on_story = []
 
-        self._title = "Challenge"
-        self._storyline = ["Enter", "Do stuff", "Exit"]
+        self._title = "Robocup@Home 2022" #Challange <-- orignally
+        self._storyline = ["Start"] # A place to add more comma delimited stories
 
     @property
     def title(self):
@@ -39,6 +39,13 @@ class BackendBase(object):
     def attach_challenge_step(self, callback):
         self.on_challenge_step += [callback]
 
+    def attach_story(self, callback):
+        self.on_story += [callback]
+
+
+
+
+
     def detach_operator_text(self, callback):
         self.on_operator_text.remove(callback)
 
@@ -47,6 +54,11 @@ class BackendBase(object):
 
     def detach_challenge_step(self, callback):
         self.on_challenge_step.remove(callback)
+
+    def detach_story(self, callback):
+        self.on_story.remove(callback)
+
+
 
     def accept_command(self, command_text):
         raise NotImplementedError()
@@ -67,18 +79,21 @@ class BackendBase(object):
         """
         self.on_image.remove(callback)
 
-    def attach_story(self, callback):
+	
+     #def attach_story(self, callback):
         """
         Add a callback for when a Story is received
         :param callback: function accepting a tuple of (title: str, storyline: [str])
         :return:
         """
-        self.on_story += [callback]
+        #self.on_story += [callback]
+  
 
-    def detach_story(self, callback):
+    #def detach_story(self, callback):
         """
         Remove a callback from when a Story is received
         :param callback:
         :return:
         """
-        self.on_story.remove(callback)
+        #self.on_story.remove(callback)
+ 

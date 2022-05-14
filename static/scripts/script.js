@@ -29,15 +29,25 @@ ws.onmessage = function (evt) {
             document.getElementById('visualization_img').setAttribute('src', image);
             break;
         case "story":
-            $("#title").text(json.title)
 
+            $("#title").text(json.title)
             console.log("Got story: '"+json+"'")
 
-            $("#storyline").empty();
+	    var stories = document.getElementById("storyline");
+            var txt = document.createElement("li");
+            txt.appendChild(document.createTextNode(json.title)); 
+            txt.setAttribute("class", json.label + " story-line");
+            console.log(json.label) // added line
+            stories.insertAdjacentElement('afterbegin', txt);
+
+            /*$("#storyline").empty();
             $(json.storyline).each(function(index){
                 console.log("Got line: '"+this+"'")
                 $("#storyline").append('<li>' + this + '</li>');
             });
+            */
+	  
+
             break;
     }
 };

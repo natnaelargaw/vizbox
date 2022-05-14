@@ -41,20 +41,27 @@ class RosBackend(BackendBase):
         self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
+	self.story_sub =  rospy.Subscriber("story", String, call_callbacks_in(self.on_story, lambda rosmsg: rosmsg.data), queue_size=100)
 
-        self.image_sub = rospy.Subscriber("image", Image, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
+  	# Pass external argument while launching server.py to pass topics as a variable, like python2.7 ./server.py image:= usb_cam/image_raw
+        self.image_sub = rospy.Subscriber("usb_cam/image_raw", Image, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
         self.compressed_image_sub = rospy.Subscriber("image/compressed", CompressedImage, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
 
-        try:
-            self.story_sub = rospy.Subscriber("story", Story, call_callbacks_in(self.on_story, lambda rosmsg: (rosmsg.title, rosmsg.storyline)), queue_size=100)
-        except NameError, e:
-            rospy.logerr("To dynamically define a Story, catkin_make this package")
+	# Commented this one out as i have already handled it in separate function
+        #try:
+        #    self.story_sub = rospy.Subscriber("story", Story, call_callbacks_in(self.on_story, lambda rosmsg: (rosmsg.title, rosmsg.storyline)), queue_size=100)
+        #except NameError as e:
+        #    rospy.logerr("To dynamically define a Story, catkin_make this package")
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)
         self.btn_pub = rospy.Publisher("next_step", String, queue_size=1)
 
-        self._title = rospy.get_param("story/title", "Challenge")
-        self._storyline = rospy.get_param("story/storyline", ["Start"])
+        self._title = rospy.get_param("story/title", "Robocup@Home 2022")
+
+	# Commented this one out <-- uncomment it and add your storylines here if you want the story line set statically onStart
+
+        # self._storyline = rospy.get_param("story/storyline", ["Start","Follow Operator","Clean room","Talk to Operator"]) 
+        # self.storyline2 = rospy.Publisher("story", String, queue_size=1)
 
     def accept_command(self, command_text):
         self.cmd_pub.publish(command_text)
