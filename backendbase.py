@@ -1,10 +1,29 @@
+import asyncio
 def call_callbacks_in(cb_list, converter):
     def callback(message):
+        asyncio.set_event_loop(asyncio.new_event_loop())
         converted = converter(message)
         for cb in cb_list:
             cb(converted)
 
     return callback
+def get_event_loop(self):
+    """Get the event loop for the current context.
+
+    Returns an instance of EventLoop or raises an exception.
+    """
+    if (self._local._loop is None and
+            not self._local._set_called and
+            isinstance(threading.current_thread(), threading._MainThread)):
+        self.set_event_loop(self.new_event_loop())
+
+    if self._local._loop is None:
+        raise RuntimeError('There is no current event loop in thread %r.'
+                            % threading.current_thread().name)
+
+    return self._local._loop
+
+
 
 
 class BackendBase(object):

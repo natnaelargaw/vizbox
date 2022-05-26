@@ -1,9 +1,9 @@
 #! /usr/bin/env python
-
+import io
 import json
 import signal
 from socket import error
-
+import numpy as np
 import time
 from tornado.ioloop import IOLoop
 from tornado.web import Application, RequestHandler, StaticFileHandler
@@ -14,6 +14,14 @@ from rosbackend import RosBackend
 
 CMD_BTN1 = "Next Step"
 CMD_BTN2 = "Stop"
+
+
+class BytesEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
+        return json.JSONEncoder.default(self, obj)
+
 
 
 
@@ -109,9 +117,8 @@ class MessageForwarder(WebSocketHandler):
     def handle_image(self, image):
         print ("handle_image({})".format(len(image)))
 
-        data = {"label": "image", "image": image}
-        data = json.dumps(data)
-
+        data = {"label": "image", "image": image.decode('utf-8')}
+        data = json.dumps(data, cls=BytesEncoder)
         self.write_message(data)
 
 	#title_storyline

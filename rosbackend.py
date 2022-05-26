@@ -8,7 +8,11 @@ import cv2
 import numpy as np
 from PIL import Image as pil_image
 import base64
-from StringIO import StringIO
+# from StringIO import StringIO
+try:
+    import BytesIO
+except ImportError:
+    from io import BytesIO
 
 try:
     from vizbox.msg import Story
@@ -41,7 +45,7 @@ class RosBackend(BackendBase):
         self.op_sub = rospy.Subscriber("operator_text", String, call_callbacks_in(self.on_operator_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.robot_sub = rospy.Subscriber("robot_text", String, call_callbacks_in(self.on_robot_text, lambda rosmsg: rosmsg.data), queue_size=100)
         self.step_sub = rospy.Subscriber("challenge_step", UInt32, call_callbacks_in(self.on_challenge_step, lambda rosmsg: rosmsg.data), queue_size=100)
-	self.story_sub =  rospy.Subscriber("story", String, call_callbacks_in(self.on_story, lambda rosmsg: rosmsg.data), queue_size=100)
+        self.story_sub =  rospy.Subscriber("story", String, call_callbacks_in(self.on_story, lambda rosmsg: rosmsg.data), queue_size=100)
 
   	# Pass external argument while launching server.py to pass topics as a variable, like python2.7 ./server.py image:= usb_cam/image_raw
         self.image_sub = rospy.Subscriber("usb_cam/image_raw", Image, call_callbacks_in(self.on_image, self.ros_image_to_base64), queue_size=1)
@@ -88,7 +92,7 @@ class RosBackend(BackendBase):
         converted = pil_image.frombytes('RGB',
                                         (rosmsg.width, rosmsg.height),
                                         rosmsg.data)
-        string_buffer = StringIO()
+        string_buffer = BytesIO()
         converted.save(string_buffer, "png")
         image_bytes = string_buffer.getvalue()
         encoded = base64.standard_b64encode(image_bytes)
